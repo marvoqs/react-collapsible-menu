@@ -1,7 +1,7 @@
 import React from "react";
 
 import MenuItem from "./components/MenuItem";
-import IntersectionObserverWrapper from "./intersection-observer-wrapper";
+import IntersectionObserverWrapper from "./IntersectionObserverWrapper";
 
 export default function IconLabelButtons() {
   return (

@@ -3,15 +3,32 @@ import styled from "styled-components";
 
 import OverflowMenu from "./components/OverflowMenu";
 
-export default function IntersectionObserverWrap({ children }) {
-  const navRef = React.useRef(null);
+interface VisibilityMapType {
+  [targetid: string]: any;
+}
 
-  const [visibilityMap, setVisibilityMap] = React.useState({});
+interface UpdatedEntriesType {
+  [targetid: string]: boolean;
+}
 
-  const handleIntersection = (entries) => {
-    const updatedEntries = {};
+interface Props {
+  children: React.ReactNode;
+}
+
+const IntersectionObserverWrapper: React.FC<Props> = ({ children }) => {
+  const navRef = React.useRef<HTMLDivElement>(null);
+
+  const [visibilityMap, setVisibilityMap] = React.useState<VisibilityMapType>(
+    {}
+  );
+
+  const handleIntersection: IntersectionObserverCallback = (
+    entries: IntersectionObserverEntry[]
+  ) => {
+    const updatedEntries: UpdatedEntriesType = {};
     entries.forEach((entry) => {
-      const targetid = entry.target.dataset.targetid;
+      const targetid = (entry.target as HTMLElement).dataset.targetid;
+      if (!targetid) return;
       console.log(entry, targetid);
       if (entry.isIntersecting) {
         updatedEntries[targetid] = true;
@@ -32,19 +49,32 @@ export default function IntersectionObserverWrap({ children }) {
       threshold: 1,
     });
 
-    // We are addting observers to child elements of the container div
+    // We are adding observers to child elements of the container div
     // with ref as navRef. Notice that we are adding observers
-    // only if we have the data attribute observerid on the child elemeent
-    Array.from(navRef.current.children).forEach((item) => {
+    // only if we have the data attribute targetid on the child elemeent
+
+    const navRefCurrent = navRef.current;
+
+    if (!navRefCurrent) return;
+
+    const items = navRefCurrent.children as HTMLCollectionOf<HTMLElement>;
+
+    if (!items) return;
+
+    Array.from(items).forEach((item) => {
       if (item.dataset.targetid) {
         observer.observe(item);
       }
     });
+
     return () => observer.disconnect();
   }, []);
+
   return (
     <StyledToolbarWrapper ref={navRef}>
-      {React.Children.map(children, (child) => {
+      {React.Children.map(children, (childItem) => {
+        const child = childItem as React.ReactElement;
+
         return React.cloneElement(child, {
           isVisible: !!visibilityMap[child.props["data-targetid"]],
         });
@@ -52,7 +82,7 @@ export default function IntersectionObserverWrap({ children }) {
       <OverflowMenu visibilityMap={visibilityMap}>{children}</OverflowMenu>
     </StyledToolbarWrapper>
   );
-}
+};
 
 const StyledToolbarWrapper = styled.div`
   display: flex;
@@ -60,3 +90,5 @@ const StyledToolbarWrapper = styled.div`
   padding: 0 20px;
   width: 75%;
 `;
+
+export default IntersectionObserverWrapper;
