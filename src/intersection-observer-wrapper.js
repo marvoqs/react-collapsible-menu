@@ -1,37 +1,13 @@
-import React, { useRef, useEffect, useState } from "react";
-import classnames from "classnames";
-import { makeStyles } from "@material-ui/core/styles";
+import React from "react";
+import styled from "styled-components";
+
 import OverflowMenu from "./components/OverflowMenu";
 
-const useIntersectionStyles = makeStyles(() => ({
-  visible: {
-    order: 0,
-    visibility: "visible",
-    opacity: 1,
-  },
-  inVisible: {
-    order: 100,
-    visibility: "hidden",
-    pointerEvents: "none",
-  },
-  toolbarWrapper: {
-    display: "flex",
-    overflow: "hidden",
-    padding: "0 20px",
-    width: "75%",
-  },
-  overflowStyle: {
-    order: 99,
-    position: "sticky",
-    right: "0",
-    backgroundColor: "white",
-  },
-}));
-
 export default function IntersectionObserverWrap({ children }) {
-  const classes = useIntersectionStyles();
-  const navRef = useRef(null);
-  const [visibilityMap, setVisibilityMap] = useState({});
+  const navRef = React.useRef(null);
+
+  const [visibilityMap, setVisibilityMap] = React.useState({});
+
   const handleIntersection = (entries) => {
     const updatedEntries = {};
     entries.forEach((entry) => {
@@ -49,7 +25,8 @@ export default function IntersectionObserverWrap({ children }) {
       ...updatedEntries,
     }));
   };
-  useEffect(() => {
+
+  React.useEffect(() => {
     const observer = new IntersectionObserver(handleIntersection, {
       root: navRef.current,
       threshold: 1,
@@ -66,21 +43,20 @@ export default function IntersectionObserverWrap({ children }) {
     return () => observer.disconnect();
   }, []);
   return (
-    <div className={classes.toolbarWrapper} ref={navRef}>
+    <StyledToolbarWrapper ref={navRef}>
       {React.Children.map(children, (child) => {
         return React.cloneElement(child, {
-          className: classnames(child.props.className, {
-            [classes.visible]: !!visibilityMap[child.props["data-targetid"]],
-            [classes.inVisible]: !visibilityMap[child.props["data-targetid"]],
-          }),
+          isVisible: !!visibilityMap[child.props["data-targetid"]],
         });
       })}
-      <OverflowMenu
-        visibilityMap={visibilityMap}
-        className={classes.overflowStyle}
-      >
-        {children}
-      </OverflowMenu>
-    </div>
+      <OverflowMenu visibilityMap={visibilityMap}>{children}</OverflowMenu>
+    </StyledToolbarWrapper>
   );
 }
+
+const StyledToolbarWrapper = styled.div`
+  display: flex;
+  overflow: hidden;
+  padding: 0 20px;
+  width: 75%;
+`;

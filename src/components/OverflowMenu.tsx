@@ -1,42 +1,22 @@
-import React, { useState, useMemo } from "react";
-import MoreVertIcon from "@material-ui/icons/MoreVert";
-// @ts-ignore
-import classnames from "classnames";
-import { IconButton, Menu, MenuItem } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+import React from "react";
+import styled from "styled-components";
 
-const useStyles = makeStyles(() => ({
-  inOverflowMenu: {
-    "&:hover": {
-      backgroundColor: "transparent",
-    },
-  },
-}));
+import MenuItem from "./MenuItem";
+import OverflowMenuItem from "./OverflowMenuItem";
 
 interface Props {
   children: React.ReactNode;
-  className?: string;
   visibilityMap?: any;
 }
 
-const OverflowMenu: React.FC<Props> = ({
-  children,
-  className,
-  visibilityMap,
-}) => {
-  const [anchorEl, setAnchorEl] = useState(null);
-  const open = Boolean(anchorEl);
-  const classes = useStyles();
+const OverflowMenu: React.FC<Props> = ({ children, visibilityMap }) => {
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const isOverflowMenuOpen = !!anchorEl;
 
-  const handleClick = (event: any) => {
-    setAnchorEl(event.currentTarget);
-  };
+  const handleClose = () => setAnchorEl(null);
+  const handleOpen = (event: any) => setAnchorEl(event.currentTarget);
 
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-
-  const shouldShowMenu = useMemo(
+  const shouldShowMenu = React.useMemo(
     () => Object.values(visibilityMap).some((v) => v === false),
     [visibilityMap]
   );
@@ -46,37 +26,55 @@ const OverflowMenu: React.FC<Props> = ({
   }
 
   return (
-    <div className={className}>
-      <MenuItem onClick={handleClick}>Show more</MenuItem>
-      <Menu
-        id="long-menu"
-        anchorEl={anchorEl}
-        keepMounted
-        open={open}
-        onClose={handleClose}
-      >
-        {React.Children.map(children, (child) => {
-          // @ts-ignore
+    <>
+      <StyledOpenButtonWrapper>
+        <MenuItem isVisible={!isOverflowMenuOpen} onClick={handleOpen}>
+          Show more
+        </MenuItem>
+      </StyledOpenButtonWrapper>
+
+      <StyledOverflowMenu isOpen={isOverflowMenuOpen}>
+        <OverflowMenuItem onClick={handleClose}>Close</OverflowMenuItem>
+
+        {React.Children.map(children, (childItem, index) => {
+          const child = childItem as React.ReactElement;
+
           if (!visibilityMap[child.props["data-targetid"]]) {
             return (
-              // @ts-ignore
-              <MenuItem key={child} onClick={handleClose}>
-                {/* @ts-ignore */}
+              <OverflowMenuItem key={index}>
                 {React.cloneElement(child, {
-                  className: classnames(
-                    // @ts-ignore
-                    child.className,
-                    classes.inOverflowMenu
-                  ),
+                  isVisible: true,
                 })}
-              </MenuItem>
+              </OverflowMenuItem>
             );
           }
           return null;
         })}
-      </Menu>
-    </div>
+      </StyledOverflowMenu>
+    </>
   );
 };
+
+interface StyledOverflowMenuProps {
+  isOpen?: boolean;
+}
+
+const StyledOverflowMenu = styled.div<StyledOverflowMenuProps>`
+  position: absolute;
+  top: 2rem;
+  z-index: 1;
+
+  display: ${(props) => (!!props.isOpen ? "block" : "none")};
+`;
+
+const StyledOpenButtonWrapper = styled.div`
+  display: inline-flex;
+
+  position: sticky;
+  order: 99;
+  right: 0;
+
+  background-color: white;
+`;
 
 export default OverflowMenu;
