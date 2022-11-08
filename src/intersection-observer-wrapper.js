@@ -1,31 +1,31 @@
 import React, { useRef, useEffect, useState } from "react";
 import classnames from "classnames";
 import { makeStyles } from "@material-ui/core/styles";
-import OverflowMenu from "./overflow-menu";
+import OverflowMenu from "./components/OverflowMenu";
 
 const useIntersectionStyles = makeStyles(() => ({
   visible: {
     order: 0,
     visibility: "visible",
-    opacity: 1
+    opacity: 1,
   },
   inVisible: {
     order: 100,
     visibility: "hidden",
-    pointerEvents: "none"
+    pointerEvents: "none",
   },
   toolbarWrapper: {
     display: "flex",
     overflow: "hidden",
     padding: "0 20px",
-    width: "75%"
+    width: "75%",
   },
   overflowStyle: {
     order: 99,
     position: "sticky",
     right: "0",
-    backgroundColor: "white"
-  }
+    backgroundColor: "white",
+  },
 }));
 
 export default function IntersectionObserverWrap({ children }) {
@@ -46,13 +46,13 @@ export default function IntersectionObserverWrap({ children }) {
 
     setVisibilityMap((prev) => ({
       ...prev,
-      ...updatedEntries
+      ...updatedEntries,
     }));
   };
   useEffect(() => {
     const observer = new IntersectionObserver(handleIntersection, {
       root: navRef.current,
-      threshold: 1
+      threshold: 1,
     });
 
     // We are addting observers to child elements of the container div
@@ -71,8 +71,8 @@ export default function IntersectionObserverWrap({ children }) {
         return React.cloneElement(child, {
           className: classnames(child.props.className, {
             [classes.visible]: !!visibilityMap[child.props["data-targetid"]],
-            [classes.inVisible]: !visibilityMap[child.props["data-targetid"]]
-          })
+            [classes.inVisible]: !visibilityMap[child.props["data-targetid"]],
+          }),
         });
       })}
       <OverflowMenu

@@ -1,6 +1,7 @@
 {
   "title": "Material demo",
   "devDependencies": {
+    "@types/classnames": "^2.3.1",
     "@types/styled-components": "^5.1.26",
     "react-scripts": "^2.1.3"
   },
