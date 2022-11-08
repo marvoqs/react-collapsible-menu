@@ -2,7 +2,6 @@ import React from "react";
 import styled from "styled-components";
 
 import MenuItem from "./MenuItem";
-import OverflowMenuItem from "./OverflowMenuItem";
 
 interface Props {
   children: React.ReactNode;
@@ -34,21 +33,17 @@ const OverflowMenu: React.FC<Props> = ({ children, visibilityMap }) => {
       </StyledOpenButtonWrapper>
 
       <StyledOverflowMenu isOpen={isOverflowMenuOpen}>
-        <OverflowMenuItem onClick={handleClose}>Close</OverflowMenuItem>
+        <button onClick={handleClose}>Close</button>
 
         {React.Children.map(children, (childItem, index) => {
           const child = childItem as React.ReactElement;
 
-          if (!visibilityMap[child.props["data-targetid"]]) {
-            return (
-              <OverflowMenuItem key={index}>
-                {React.cloneElement(child, {
-                  isVisible: true,
-                })}
-              </OverflowMenuItem>
-            );
-          }
-          return null;
+          if (!!visibilityMap[child.props["data-targetid"]]) return null;
+
+          return React.cloneElement(child, {
+            key: index,
+            isVisible: true,
+          });
         })}
       </StyledOverflowMenu>
     </>

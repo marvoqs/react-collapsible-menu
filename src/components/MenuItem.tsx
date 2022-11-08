@@ -7,14 +7,8 @@ interface MenuItemProps {
 const MenuItem = styled.div<MenuItemProps>`
   display: inline-flex;
   flex: 0 0 auto;
-  margin: 0.85rem;
+  padding: 0.85rem;
   font-style: italic;
-
-  .inoverflowmenu {
-    &:hover {
-      background-color: transparent;
-    }
-  }
 
   ${(props) =>
     !!props.isVisible

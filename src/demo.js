@@ -1,11 +1,11 @@
 import React from "react";
 
 import MenuItem from "./components/MenuItem";
-import IntersectionObserverWrapper from "./IntersectionObserverWrapper";
+import ResponsiveMenuBar from "./components/ResponsiveMenuBar";
 
 export default function IconLabelButtons() {
   return (
-    <IntersectionObserverWrapper>
+    <ResponsiveMenuBar>
       <MenuItem data-targetid="talk">Talk</MenuItem>
       <MenuItem data-targetid="save">Save</MenuItem>
       <MenuItem data-targetid="upload">Upload</MenuItem>
@@ -15,6 +15,6 @@ export default function IconLabelButtons() {
       <MenuItem data-targetid="mark-as-read">Mark as Read</MenuItem>
       <MenuItem data-targetid="archive">Archive</MenuItem>
       <MenuItem data-targetid="delete">Delete</MenuItem>
-    </IntersectionObserverWrapper>
+    </ResponsiveMenuBar>
   );
 }

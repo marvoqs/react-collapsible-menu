@@ -1,13 +1,9 @@
 import React from "react";
 import styled from "styled-components";
 
-import OverflowMenu from "./components/OverflowMenu";
+import OverflowMenu from "./OverflowMenu";
 
 interface VisibilityMapType {
-  [targetid: string]: any;
-}
-
-interface UpdatedEntriesType {
   [targetid: string]: boolean;
 }
 
@@ -15,7 +11,7 @@ interface Props {
   children: React.ReactNode;
 }
 
-const IntersectionObserverWrapper: React.FC<Props> = ({ children }) => {
+const ResponsiveMenuBar: React.FC<Props> = ({ children }) => {
   const navRef = React.useRef<HTMLDivElement>(null);
 
   const [visibilityMap, setVisibilityMap] = React.useState<VisibilityMapType>(
@@ -25,20 +21,17 @@ const IntersectionObserverWrapper: React.FC<Props> = ({ children }) => {
   const handleIntersection: IntersectionObserverCallback = (
     entries: IntersectionObserverEntry[]
   ) => {
-    const updatedEntries: UpdatedEntriesType = {};
+    const updatedEntries: VisibilityMapType = {};
+
     entries.forEach((entry) => {
       const targetid = (entry.target as HTMLElement).dataset.targetid;
       if (!targetid) return;
-      console.log(entry, targetid);
-      if (entry.isIntersecting) {
-        updatedEntries[targetid] = true;
-      } else {
-        updatedEntries[targetid] = false;
-      }
+
+      updatedEntries[targetid] = entry.isIntersecting;
     });
 
-    setVisibilityMap((prev) => ({
-      ...prev,
+    setVisibilityMap((prevState) => ({
+      ...prevState,
       ...updatedEntries,
     }));
   };
@@ -49,17 +42,11 @@ const IntersectionObserverWrapper: React.FC<Props> = ({ children }) => {
       threshold: 1,
     });
 
-    // We are adding observers to child elements of the container div
-    // with ref as navRef. Notice that we are adding observers
-    // only if we have the data attribute targetid on the child elemeent
-
     const navRefCurrent = navRef.current;
 
     if (!navRefCurrent) return;
 
     const items = navRefCurrent.children as HTMLCollectionOf<HTMLElement>;
-
-    if (!items) return;
 
     Array.from(items).forEach((item) => {
       if (item.dataset.targetid) {
@@ -71,7 +58,7 @@ const IntersectionObserverWrapper: React.FC<Props> = ({ children }) => {
   }, []);
 
   return (
-    <StyledToolbarWrapper ref={navRef}>
+    <StyledResponsiveMenuBar ref={navRef}>
       {React.Children.map(children, (childItem) => {
         const child = childItem as React.ReactElement;
 
@@ -80,15 +67,15 @@ const IntersectionObserverWrapper: React.FC<Props> = ({ children }) => {
         });
       })}
       <OverflowMenu visibilityMap={visibilityMap}>{children}</OverflowMenu>
-    </StyledToolbarWrapper>
+    </StyledResponsiveMenuBar>
   );
 };
 
-const StyledToolbarWrapper = styled.div`
+const StyledResponsiveMenuBar = styled.div`
   display: flex;
   overflow: hidden;
   padding: 0 20px;
   width: 75%;
 `;
 
-export default IntersectionObserverWrapper;
+export default ResponsiveMenuBar;
