@@ -1,6 +1,7 @@
 {
   "title": "Material demo",
   "devDependencies": {
+    "@types/styled-components": "^5.1.26",
     "react-scripts": "^2.1.3"
   },
   "description": "https://github.com/mui-org/material-ui/blob/master/docs/src/pages/components/buttons/IconLabelButtons.js",
@@ -9,7 +10,9 @@
     "@material-ui/icons": "latest",
     "classnames": "2.2.6",
     "react": "latest",
-    "react-dom": "latest"
+    "react-dom": "latest",
+    "styled-components": "^5.3.6",
+    "typescript": "^4.8.4"
   },
   "name": "material-demo-forked",
   "version": "0.0.50",
